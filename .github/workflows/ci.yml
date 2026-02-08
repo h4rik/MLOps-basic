@@ -7,16 +7,20 @@ on:
     branches: [ main ]
 
 jobs:
+  # matrix-pip will run the same steps for each python version defined in the matrix, Matric basically means run the same job multiple times with different configurations.
+  # instead of matrix-pip we can use any name as per our wish.
   matrix-pip:
     name: Train and Save the model
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest     # means will run on github runner as it is free of cost and we don't have to worry about the infrastructure, we can also use self-hosted runners if we want to run on our own infrastructure.
+    # No need to use my personal VM, and these runners will be released as soon as the workflow is completed, so we don't have to worry about the cost of running the workflow, and we can also run multiple workflows in parallel without worrying about the cost.
+    # So there is no need to using virtual environment for github actions, as each workflow run will be isolated and will not affect other runs, and we can also use different versions of python in the same workflow without worrying about the conflicts between different versions of python.
     strategy:
-      matrix:
-        python: [3.11, 3.12]
+      matrix:    # this name should be matrix, to run on different python versions, we can also add more versions if we want to test on more versions of python.
+        python: [3.11, 3.12, 3.13]
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # These are actions provided by github to perform common tasks, in this case we are checking out the code from the repository to the runner, so that we can run our code on the runner.
       
       - name: Setup python 
         uses: actions/setup-python@v4
@@ -33,11 +37,11 @@ jobs:
         run: |
            python train.py
            ls -la artifacts
+           # This is to ensure once the train.py is executed successfully, model is saved to the artifcats folder.
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ml-artifacts-${{ matrix.python }}-${{ github.run_id }}
-          path: artifacts
-
+          name: ml-artifacts-${{ matrix.python }}-${{ github.run_id }}     # Just to make sure the artifact name is unique for each run.github.run_id - means id of the github run and also to make sure artifact location is unique otherwise CI file might fail due to same artifact name.
+          path: artifacts/     # This is the path where the model is saved(inside the artifacts folder), so we are uploading the model to the github actions artifacts, so that we can download it later if we want to use it for inference or for any other purpose.
 
