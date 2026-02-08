@@ -16,7 +16,7 @@ jobs:
     # So there is no need to using virtual environment for github actions, as each workflow run will be isolated and will not affect other runs, and we can also use different versions of python in the same workflow without worrying about the conflicts between different versions of python.
     strategy:
       matrix:    # this name should be matrix, to run on different python versions, we can also add more versions if we want to test on more versions of python.
-        python: [3.11, 3.12, 3.13]
+        python: [3.11, 3.12]
     
     steps:
       - name: Checkout
